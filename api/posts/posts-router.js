@@ -67,19 +67,31 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Post.remove(req.params.id)
+  Posts.remove(req.params.id)
     .then(count => {
       if (count > 0) {
-        res.status(200).json({ message: "The adopter has been nuked" });
+        res.status(200).json({ message: "Post has been deleted" });
       } else {
-        res.status(404).json({ message: "The adopter could not be found" });
+        res.status(404).json({ message: "The post could not be found" });
       }
     })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: "Error removing the post" });
+    });
+});
+
+router.get("/:id/comments", (req, res) => {
+  const id = req.params.id;
+
+  Posts.findPostComments(id)
+    .then(post => {
+      res.status(200).json(post);
+    })
     .catch(error => {
-      console.log(error);
-      res.status(500).json({
-        message: "Error removing the adopter",
-      });
+      res
+        .status(404)
+        .json({ message: "The comments information could not be retrieved" });
     });
 });
 
